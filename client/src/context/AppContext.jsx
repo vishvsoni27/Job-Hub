@@ -4,31 +4,38 @@ import { jobsData } from "../assets/assets";
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
-    const [searchFilter, setSearchFilter] = useState({
-        title:'',
-        location:'',
-    })
-    const [isSearched, setIsSearched] = useState(false)
+  const [searchFilter, setSearchFilter] = useState({
+    title: "",
+    location: "",
+  });
+  const [isSearched, setIsSearched] = useState(false);
 
-    const [jobs, setJobs] = useState([])
+  const [jobs, setJobs] = useState([]);
 
-    //functon to fetch jobs
+  const [showRecruiterLogin, setShowRecruiterLogin] = useState(false);
 
-    const fetchJobs = async () => {
-        setJobs(jobsData);
-    }
+  //functon to fetch jobs
 
-    useEffect(()=>{
-        fetchJobs()
-    },[])
+  const fetchJobs = async () => {
+    setJobs(jobsData);
+  };
 
-    const value = {
-        searchFilter,setSearchFilter,
-        isSearched, setIsSearched,
-        jobs, setJobs
-    }
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
-    return (<AppContext.Provider value={value}>
-        {props.children}
-    </AppContext.Provider>)
-}
+  const value = {
+    searchFilter,
+    setSearchFilter,
+    isSearched,
+    setIsSearched,
+    jobs,
+    setJobs,
+    showRecruiterLogin,
+    setShowRecruiterLogin,
+  };
+
+  return (
+    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+  );
+};
