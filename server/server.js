@@ -5,7 +5,8 @@ import connectDB from "./config/db.js";
 import connectCloudnary from "./config/cloudinary.js";
 import "./config/instrument.js";
 import * as Sentry from "@sentry/node";
-import { clerkWebhook } from "./controllers/webhooks.js";
+import { clerkWebhooks } from "./controllers/webhooks.js";
+import { clerkMiddleware } from "@clerk/express";
 
 //Routes
 import companyRoutes from "./routes/companyRoutes.js";
@@ -21,6 +22,7 @@ await connectCloudnary();
 //Middleware
 app.use(cors());
 app.use(express.json());
+app.use(clerkMiddleware());
 
 //Routes
 app.get("/", (req, res) => {
@@ -31,7 +33,7 @@ app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-app.get("/webhooks", clerkWebhook);
+app.get("/webhooks", clerkWebhooks);
 app.use("/api/company", companyRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/users", userRoutes);

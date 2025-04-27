@@ -1,7 +1,7 @@
 import { connect } from "mongoose";
 
 // URI for MongoDB Atlas
-const URI = process.env.MONGODB_ATLAS_URI + "/JobHub";
+const URI = process.env.MONGODB_ATLAS_URI;
 
 // URI for MongoDB Compass
 // const URI = process.env.MONGODB_COMPASS_URI + "/JobHub";
