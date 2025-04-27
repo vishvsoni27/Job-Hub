@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import { Webhook } from "svix";
 
 //API Controller Function To Manage Clerk User with databse.
-export const F = async (req, res) => {
+export const clerkWebhook = async (req, res) => {
   try {
     // Create a Svix instance with clerk webhook secret.
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);

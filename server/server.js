@@ -2,15 +2,21 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import connectDB from "./config/db.js";
+import connectCloudnary from "./config/cloudinary.js";
 import "./config/instrument.js";
 import * as Sentry from "@sentry/node";
 import { clerkWebhook } from "./controllers/webhooks.js";
 
+//Routes
+import companyRoutes from "./routes/companyRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 //Intitialize the app
 const app = express();
 
 // Connect to the database
 await connectDB();
+await connectCloudnary();
 
 //Middleware
 app.use(cors());
@@ -18,14 +24,17 @@ app.use(express.json());
 
 //Routes
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("JobHub backend server is running!");
 });
 
 app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-app.get("/webhooks", clerkWebhooks);
+app.get("/webhooks", clerkWebhook);
+app.use("/api/company", companyRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/users", userRoutes);
 
 //Listen to the server
 const PORT = process.env.PORT || 5000;
