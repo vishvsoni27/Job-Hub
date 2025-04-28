@@ -26,10 +26,10 @@ const ApplyJob = () => {
       if (data.success) {
         setJobData(data.job);
       } else {
-        toast.error(data.message);
+        toast.error("AAAA"+data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error("AAAA"+error.message);
     }
   };
 
