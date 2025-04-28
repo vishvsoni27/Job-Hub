@@ -9,12 +9,12 @@ export const getUserData = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.json({ message: "User not found" });
     }
 
     res.status(200).json({ success: true, user });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -27,15 +27,16 @@ export const applyForJob = async (req, res) => {
     const isAlreadyApplied = await JobApplication.findOne({ jobId, userId });
 
     if (isAlreadyApplied > 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Already applied for this job" });
+      return res.json({
+        success: false,
+        message: "Already applied for this job",
+      });
     }
 
     const jobData = await Job.findById(jobId);
 
     if (!jobData) {
-      return res.status(404).json({ success: false, message: "Job not found" });
+      return res.json({ success: false, message: "Job not found" });
     }
 
     await JobApplication.create({
@@ -47,7 +48,7 @@ export const applyForJob = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Applied Successfully" });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -61,14 +62,12 @@ export const getUserJobAppliedApplications = async (req, res) => {
       .exec();
 
     if (!applications) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No applications found" });
+      return res.json({ success: false, message: "No applications found" });
     }
 
     return res.status(200).json({ success: true, applications });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -86,8 +85,8 @@ export const updateUserResume = async (req, res) => {
 
     await userData.save();
 
-    res.status(200).json({ success: true, message: "Resume updated" });
+    res.json({ success: true, message: "Resume updated" });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };

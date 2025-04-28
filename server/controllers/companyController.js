@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import generateToken from "../util/generateToken.js";
 import Job from "../models/Job.js";
+import JobApplication from "../models/JobApplication.js";
 
 // Register a new company
 export const registerCompany = async (req, res) => {
@@ -10,16 +11,14 @@ export const registerCompany = async (req, res) => {
 
   const imageFile = req.file;
   if (!name || !email || !password || !imageFile) {
-    return res
-      .status(400)
-      .json({ succcess: false, message: "Missing Details" });
+    return res.json({ success: false, message: "Missing Details" });
   }
 
   try {
     const companyExists = await Company.findOne({ email });
     if (companyExists) {
-      return res.status(400).json({
-        succcess: false,
+      return res.json({
+        success: false,
         message: "Company already exists",
       });
     }
@@ -30,8 +29,8 @@ export const registerCompany = async (req, res) => {
     const imageUpload = await cloudinary.uploader
       .upload(imageFile.path)
       .catch((error) => {
-        return res.status(500).json({
-          succcess: false,
+        return res.json({
+          success: false,
           message: "Cloudinary Error : " + error.message,
         });
       });
@@ -45,7 +44,7 @@ export const registerCompany = async (req, res) => {
 
     await company.save();
     return res.status(200).json({
-      succcess: true,
+      success: true,
       company: {
         _id: company._id,
         name: company.name,
@@ -57,9 +56,10 @@ export const registerCompany = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res
-      .status(500)
-      .json({ succcess: false, message: "Internal Error : " + error.message });
+    return res.json({
+      success: false,
+      message: "Internal Error : " + error.message,
+    });
   }
 };
 
@@ -69,29 +69,39 @@ export const loginCompany = async (req, res) => {
   try {
     const company = await Company.findOne({ email });
 
-    if (bcrypt.compare(password, company.password)) {
-      res.status(200).json({
-        succcess: true,
-        company: {
-          _id: company._id,
-          name: company.name,
-          email: company.email,
-          image: company.image,
-        },
-        message: "Company logged in successfully",
-        token: generateToken(company._id),
+    if (!company) {
+      return res.json({
+        success: false,
+        message: "Invalid email or paasword",
       });
+    }
+
+    if (await bcrypt.compare(password, company.password)) {
+      res
+        .json({
+          success: true,
+          company: {
+            _id: company._id,
+            name: company.name,
+            email: company.email,
+            image: company.image,
+          },
+          message: "Company logged in successfully",
+          token: generateToken(company._id),
+        })
+        .status(200);
     } else {
-      return res.status(400).json({
-        succcess: false,
+      return res.json({
+        success: false,
         message: "Invalid email or password",
       });
     }
   } catch (error) {
     console.log("Inside loginCompany : " + error);
-    return res
-      .status(500)
-      .json({ succcess: false, message: "Internal Error : " + error.message });
+    return res.json({
+      success: false,
+      message: "Internal Error : " + error.message,
+    });
   }
 };
 
@@ -99,13 +109,14 @@ export const loginCompany = async (req, res) => {
 export const getCompanyData = async (req, res) => {
   try {
     const company = req.company;
-    res.status(200).json({
-      succcess: true,
+    // console.log(company);
+    res.json({
+      success: true,
       company,
     });
   } catch (error) {
-    res.status(500).json({
-      succcess: false,
+    res.json({
+      success: false,
       message: "Internal Error : " + error.message,
     });
   }
@@ -132,12 +143,13 @@ export const postJob = async (req, res) => {
     await newJob.save();
 
     res.json({
-      succcess: true,
-      message: newJob,
+      success: true,
+      message: "Job posted successfully",
+      newJob,
     });
   } catch {
     res.json({
-      succcess: false,
+      success: false,
       message: "Error in posting job : " + error.message,
     });
   }
@@ -152,13 +164,20 @@ export const getCompanyPostedJobs = async (req, res) => {
     const companyId = req.company._id;
     const jobs = await Job.find({ companyId });
 
+    const jobsData = await Promise.all(
+      jobs.map(async (job) => {
+        const applicats = await JobApplication.find({ jobId: job._id });
+        return { ...job.toObject(), applicats: applicats.length };
+      })
+    );
+
     res.status(200).json({
-      succcess: true,
-      jobs,
+      success: true,
+      jobsData,
     });
   } catch (error) {
-    res.status(500).json({
-      succcess: false,
+    res.json({
+      success: false,
       message: "Internal Error : " + error.message,
     });
   }
@@ -184,7 +203,7 @@ export const changeVisibility = async (req, res) => {
     res.status(200).json({ success: true, message: job });
   } catch (error) {
     res.status(500).json({
-      succcess: false,
+      success: false,
       message: "Internal Error : " + error.message,
     });
   }

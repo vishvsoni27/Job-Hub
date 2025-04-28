@@ -10,7 +10,7 @@ import upload from "../config/multer.js";
 const router = express.Router();
 
 // Get user data
-router.get("/", getUserData);
+router.get("/user", getUserData);
 
 // Apply for job
 router.post("/apply", applyForJob);
