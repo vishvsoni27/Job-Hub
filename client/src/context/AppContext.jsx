@@ -36,7 +36,6 @@ export const AppContextProvider = (props) => {
       } else {
         toast.error(data.message);
       }
-      setJobs(jobsData);
     } catch (error) {
       toast.error(error.message);
     }
@@ -67,10 +66,10 @@ export const AppContextProvider = (props) => {
       const token = await getToken();
 
       const { data } = await axios.get(backendUrl + "/api/users/user", {
-        headers: { Athorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (dara.success) {
+      if (data.success) {
         setUserData(data.user);
       } else {
         toast.error(data.message);
