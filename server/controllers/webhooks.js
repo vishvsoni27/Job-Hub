@@ -4,7 +4,6 @@ import { Webhook } from "svix";
 //API Controller Function To Manage Clerk User with databse.
 export const clerkWebhooks = async (req, res) => {
   try {
-    console.log("webhooks api called");
     // Create a Svix instance with clerk webhook secret.
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
@@ -15,8 +14,8 @@ export const clerkWebhooks = async (req, res) => {
       "svix-signature": req.headers["svix-signature"],
     });
 
-    // Getting data from request body.
-    const { data, type } = req.body;
+    // Getting data from verified event
+    const { data, type } = evt;
 
     // Switch cases for different types of events.
     switch (type) {
